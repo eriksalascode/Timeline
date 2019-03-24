@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F221AADF2246F08100507EBE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AADE2246F08100507EBE /* AppDelegate.swift */; };
-		F221AAE12246F08100507EBE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AAE02246F08100507EBE /* ViewController.swift */; };
+		F221AAE12246F08100507EBE /* ItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AAE02246F08100507EBE /* ItemViewController.swift */; };
 		F221AAE42246F08100507EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F221AAE22246F08100507EBE /* Main.storyboard */; };
 		F221AAE72246F08100507EBE /* Timeline.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F221AAE52246F08100507EBE /* Timeline.xcdatamodeld */; };
 		F221AAE92246F08200507EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F221AAE82246F08200507EBE /* Assets.xcassets */; };
@@ -18,7 +18,7 @@
 /* Begin PBXFileReference section */
 		F221AADB2246F08100507EBE /* Timeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timeline.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F221AADE2246F08100507EBE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F221AAE02246F08100507EBE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F221AAE02246F08100507EBE /* ItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemViewController.swift; sourceTree = "<group>"; };
 		F221AAE32246F08100507EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F221AAE62246F08100507EBE /* Timeline.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Timeline.xcdatamodel; sourceTree = "<group>"; };
 		F221AAE82246F08200507EBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -57,7 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				F221AADE2246F08100507EBE /* AppDelegate.swift */,
-				F221AAE02246F08100507EBE /* ViewController.swift */,
+				F221AAE02246F08100507EBE /* ItemViewController.swift */,
 				F221AAE22246F08100507EBE /* Main.storyboard */,
 				F221AAE82246F08200507EBE /* Assets.xcassets */,
 				F221AAEA2246F08200507EBE /* LaunchScreen.storyboard */,
@@ -138,7 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F221AAE12246F08100507EBE /* ViewController.swift in Sources */,
+				F221AAE12246F08100507EBE /* ItemViewController.swift in Sources */,
 				F221AAE72246F08100507EBE /* Timeline.xcdatamodeld in Sources */,
 				F221AADF2246F08100507EBE /* AppDelegate.swift in Sources */,
 			);
