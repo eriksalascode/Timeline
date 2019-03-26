@@ -8,10 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		7CA984D7BB88A12B2EC8A641 /* Pods_Timeline.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EDC1D32AC7C240ABF5F0CE7 /* Pods_Timeline.framework */; };
+		F21EF4E02249AEA100DF4CDA /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21EF4DF2249AEA100DF4CDA /* Item.swift */; };
+		F21EF4E22249AEAA00DF4CDA /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = F21EF4E12249AEAA00DF4CDA /* Category.swift */; };
 		F221AADF2246F08100507EBE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AADE2246F08100507EBE /* AppDelegate.swift */; };
 		F221AAE12246F08100507EBE /* ItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AAE02246F08100507EBE /* ItemViewController.swift */; };
 		F221AAE42246F08100507EBE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F221AAE22246F08100507EBE /* Main.storyboard */; };
-		F221AAE72246F08100507EBE /* Timeline.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F221AAE52246F08100507EBE /* Timeline.xcdatamodeld */; };
 		F221AAE92246F08200507EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F221AAE82246F08200507EBE /* Assets.xcassets */; };
 		F221AAEC2246F08200507EBE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F221AAEA2246F08200507EBE /* LaunchScreen.storyboard */; };
 		F221AAFA22481C9800507EBE /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AAF922481C9800507EBE /* CategoryViewController.swift */; };
@@ -21,11 +22,12 @@
 		5EDC1D32AC7C240ABF5F0CE7 /* Pods_Timeline.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Timeline.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF9079C60C000F794DEE5A9 /* Pods-Timeline.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Timeline.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Timeline/Pods-Timeline.debug.xcconfig"; sourceTree = "<group>"; };
 		A560C0AA77D885EA558B4310 /* Pods-Timeline.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Timeline.release.xcconfig"; path = "Pods/Target Support Files/Pods-Timeline/Pods-Timeline.release.xcconfig"; sourceTree = "<group>"; };
+		F21EF4DF2249AEA100DF4CDA /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		F21EF4E12249AEAA00DF4CDA /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		F221AADB2246F08100507EBE /* Timeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Timeline.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F221AADE2246F08100507EBE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F221AAE02246F08100507EBE /* ItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemViewController.swift; sourceTree = "<group>"; };
 		F221AAE32246F08100507EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		F221AAE62246F08100507EBE /* Timeline.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Timeline.xcdatamodel; sourceTree = "<group>"; };
 		F221AAE82246F08200507EBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F221AAEB2246F08200507EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F221AAED2246F08200507EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -95,7 +97,8 @@
 		F221AAF5224704C700507EBE /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				F221AAE52246F08100507EBE /* Timeline.xcdatamodeld */,
+				F21EF4DF2249AEA100DF4CDA /* Item.swift */,
+				F21EF4E12249AEAA00DF4CDA /* Category.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -111,8 +114,8 @@
 		F221AAF7224704F000507EBE /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				F221AAE02246F08100507EBE /* ItemViewController.swift */,
 				F221AAF922481C9800507EBE /* CategoryViewController.swift */,
+				F221AAE02246F08100507EBE /* ItemViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -249,10 +252,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F21EF4E02249AEA100DF4CDA /* Item.swift in Sources */,
 				F221AAFA22481C9800507EBE /* CategoryViewController.swift in Sources */,
 				F221AAE12246F08100507EBE /* ItemViewController.swift in Sources */,
-				F221AAE72246F08100507EBE /* Timeline.xcdatamodeld in Sources */,
 				F221AADF2246F08100507EBE /* AppDelegate.swift in Sources */,
+				F21EF4E22249AEAA00DF4CDA /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,19 +458,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		F221AAE52246F08100507EBE /* Timeline.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				F221AAE62246F08100507EBE /* Timeline.xcdatamodel */,
-			);
-			currentVersion = F221AAE62246F08100507EBE /* Timeline.xcdatamodel */;
-			path = Timeline.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = F221AAD32246F08100507EBE /* Project object */;
 }

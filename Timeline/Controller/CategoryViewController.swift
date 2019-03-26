@@ -7,13 +7,13 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
-    //use the app delegate to reach the persistentContainer viewContext
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    //create a new Realm
+    let realm = try! Realm()
     //create an array of Category objects
-    var categories = [Category]()
+    var categories: Results<Category>?
     
     
     override func viewDidLoad() {
@@ -37,16 +37,14 @@ class CategoryViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         //return the number of objects in the categories array
-        return categories.count
+        return categories?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //create a reusable cell
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        //create a reference to the category in the current categories[indexPath.row]
-        let category = categories[indexPath.row]
         //set the text label to the name of the category at the current index path
-        cell.textLabel?.text = category.name
+        cell.textLabel?.text = categories?[indexPath.row].name ?? "No categories added yet"
         //return the custom cell to be displayed
         return cell
     }
@@ -99,7 +97,7 @@ class CategoryViewController: UITableViewController {
         //access the selectedCategory property of the destination view controller and set it to the
         //current selected category to load the items associated with it
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categories[indexPath.row]
+            destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
 
@@ -115,13 +113,11 @@ class CategoryViewController: UITableViewController {
         //create an action button that the user can touch once they are ready to add a new category
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
             //create a new category reference in the context
-            let newCategory = Category(context: self.context)
+            let newCategory = Category()
             //set the newCategory name from the textField's input
             newCategory.name = textField.text!
-            //append the new category to the category array
-            self.categories.append(newCategory)
             //save the new category into the database
-            self.saveCategories()
+            self.save(category: newCategory)
             
         }
         //add a textField that the users can use to add the new category
@@ -142,9 +138,11 @@ class CategoryViewController: UITableViewController {
     
     // MARK: - Data Manipulation Methods
     //save a new category into the database
-    func saveCategories() {
+    func save(category: Category) {
         do {
-            try context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print(error)
         }
@@ -153,13 +151,8 @@ class CategoryViewController: UITableViewController {
     }
     
     //load all categories saved in the database
-    func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        do {
-            //assign all the Category objects saved in the database into the local categories array
-            categories = try context.fetch(request)
-        } catch {
-            print(error)
-        }
+    func loadCategories() {
+        categories = realm.objects(Category.self)
         //reload the table view data shown to the user
         tableView.reloadData()
     }
