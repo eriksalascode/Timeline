@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class CategoryViewController: SwipeTableViewController {
     //create a new Realm
@@ -20,6 +21,7 @@ class CategoryViewController: SwipeTableViewController {
         super.viewDidLoad()
         
         loadCategories()
+        tableView.separatorStyle = .none
     }
     
     // MARK: - Table View Datasource Methods
@@ -35,7 +37,16 @@ class CategoryViewController: SwipeTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "No categories added yet"
+        
+        if let category = categories?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
+            
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+        }
+
         
         
         return cell
@@ -64,6 +75,7 @@ class CategoryViewController: SwipeTableViewController {
         let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
+            newCategory.color = UIColor.randomFlat.hexValue()
             self.save(category: newCategory)
             
         }
@@ -107,3 +119,26 @@ class CategoryViewController: SwipeTableViewController {
         }
     }
 }
+
+
+/*
+ 
+ 
+ override func viewDidLoad() {
+ super.viewDidLoad()
+ view.backgroundColor = .black
+ 
+ navigationController?.navigationBar.barTintColor = ColorCodes.logoPrimaryColor
+ let label = UILabel()
+ label.attributedText = NSMutableAttributedString(string: "Your Profile", attributes: [NSAttributedString.Key.font : UIFont(name: "Montserrat-Bold", size: 15)!, NSAttributedString.Key.foregroundColor : UIColor.white])
+ label.sizeToFit()
+ navigationController?.navigationBar.topItem?.titleView = label
+ navigationController?.navigationBar.tintColor = .white
+ navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(signOutUser))
+ navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "SettingsWheel"), style: .plain, target: self, action: #selector(settingsTapped))
+ }
+ 
+ 
+ 
+ 
+ */
