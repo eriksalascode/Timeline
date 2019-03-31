@@ -103,7 +103,7 @@ class ItemViewController: SwipeTableViewController {
        
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+        let addItem = UIAlertAction(title: "Add", style: .default) { (action) in
             
             if let currentCategory = self.selectedCategory {
                 do {
@@ -121,13 +121,20 @@ class ItemViewController: SwipeTableViewController {
             self.tableView.reloadData()
         }
         
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
+        
 
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
         }
         
-        alert.addAction(action)
+        alert.addAction(cancel)
+        alert.addAction(addItem)
+        
         
         present(alert, animated: true, completion: nil)
     }

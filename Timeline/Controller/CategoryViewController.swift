@@ -71,20 +71,28 @@ class CategoryViewController: SwipeTableViewController {
     // MARK: - Add New Categories
     @IBAction func addCategoryButton(_ sender: UIBarButtonItem) {
         var textField = UITextField()
+        
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Add Category", style: .default) { (action) in
+        
+        let addCategory = UIAlertAction(title: "Add", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
             newCategory.color = UIColor.randomFlat.hexValue()
             self.save(category: newCategory)
             
         }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Add new category"
             textField = alertTextField
         }
         
-        alert.addAction(action)
+        alert.addAction(cancel)
+        alert.addAction(addCategory)
         
         present(alert, animated: true, completion: nil)
         
