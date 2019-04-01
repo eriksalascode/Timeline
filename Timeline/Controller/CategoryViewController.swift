@@ -22,6 +22,13 @@ class CategoryViewController: SwipeTableViewController {
         
         loadCategories()
         tableView.separatorStyle = .none
+        tableView.reloadData()
+        
+    
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        tableView.reloadData()
     }
     
     // MARK: - Table View Datasource Methods
@@ -36,20 +43,7 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        
-        if let category = categories?[indexPath.row] {
-            cell.textLabel?.text = category.name
-            
-            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
-            
-            cell.backgroundColor = categoryColor
-            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
-        }
-
-        
-        
-        return cell
+        return categorySetup(indexPath: indexPath)
     }
     
   
@@ -58,15 +52,6 @@ class CategoryViewController: SwipeTableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let destinationVC = segue.destination as! ItemViewController
-        if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categories?[indexPath.row]
-        }
-    }
-
-    
     
     // MARK: - Add New Categories
     @IBAction func addCategoryButton(_ sender: UIBarButtonItem) {
@@ -99,6 +84,7 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     // MARK: - Data Manipulation Methods
+    
     func save(category: Category) {
         do {
             try realm.write {
@@ -108,6 +94,32 @@ class CategoryViewController: SwipeTableViewController {
             print(error)
         }
         tableView.reloadData()
+    }
+    
+    func categorySetup(indexPath: IndexPath) -> UITableViewCell {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+        
+        if let category = categories?[indexPath.row] {
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:24)
+            cell.detailTextLabel?.font = UIFont(name:"AvenirNext-Regular", size:17)
+            cell.textLabel?.text = category.name
+            
+            guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat:true)
+            
+            if categories?[indexPath.row].items.count != 0 {
+                cell.detailTextLabel?.isHidden = false
+                guard let itemCount = categories?[indexPath.row].items.count else {fatalError()}
+                cell.detailTextLabel?.text = String(itemCount)
+                cell.detailTextLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
+            } else {
+                cell.detailTextLabel?.isHidden = true
+            }
+            
+        }
+        return cell
     }
     
     func loadCategories() {
@@ -126,27 +138,16 @@ class CategoryViewController: SwipeTableViewController {
             }
         }
     }
+    
+    // MARK: - Prepare For Segue
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ItemViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categories?[indexPath.row]
+        }
+    }
+
 }
 
-
-/*
- 
- 
- override func viewDidLoad() {
- super.viewDidLoad()
- view.backgroundColor = .black
- 
- navigationController?.navigationBar.barTintColor = ColorCodes.logoPrimaryColor
- let label = UILabel()
- label.attributedText = NSMutableAttributedString(string: "Your Profile", attributes: [NSAttributedString.Key.font : UIFont(name: "Montserrat-Bold", size: 15)!, NSAttributedString.Key.foregroundColor : UIColor.white])
- label.sizeToFit()
- navigationController?.navigationBar.topItem?.titleView = label
- navigationController?.navigationBar.tintColor = .white
- navigationController?.navigationBar.topItem?.leftBarButtonItem = UIBarButtonItem(title: "Log Out", style: .plain, target: self, action: #selector(signOutUser))
- navigationController?.navigationBar.topItem?.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "SettingsWheel"), style: .plain, target: self, action: #selector(settingsTapped))
- }
- 
- 
- 
- 
- */

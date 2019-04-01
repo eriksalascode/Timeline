@@ -15,18 +15,23 @@ class ItemViewController: SwipeTableViewController {
     @IBOutlet var searchBar: UISearchBar!
     var categoryItems: Results<Item>?
     let realm = try! Realm()
+    let image = UIImage(named: "checkmark")
 
-
-    
     var selectedCategory: Category? {
         didSet {
             loadItems()
         }
     }
-
+    
+    //MARK: - View setup
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.separatorStyle = .none
+        
+        self.navigationItem.hidesBackButton = true
+        let newBackButton = UIBarButtonItem(title: "Timeline", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ItemViewController.back(sender:)))
+        self.navigationItem.leftBarButtonItem = newBackButton
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,9 +54,6 @@ class ItemViewController: SwipeTableViewController {
         navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
         searchBar.barTintColor = navBarColor
     }
-        
-
-    
     
     // MARK: - Tableview datasource methods
     
@@ -63,11 +65,14 @@ class ItemViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = categoryItems?[indexPath.row] {
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:17)
             cell.textLabel?.text = item.title
+            cell.imageView?.image = item.done ? image : nil
             
             if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(categoryItems!.count)) {
                 cell.backgroundColor = color
                 cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+                cell.tintColor = ContrastColorOf(color, returnFlat: true)
             }
             cell.accessoryType = item.done ? .checkmark : .none
         } else {
@@ -157,6 +162,10 @@ class ItemViewController: SwipeTableViewController {
                 print("Error deleting item, \(error)")
             }
         }
+    }
+    
+    @objc func back(sender: UIBarButtonItem) {    
+        _ = navigationController?.popViewController(animated: true)
     }
 }
 
