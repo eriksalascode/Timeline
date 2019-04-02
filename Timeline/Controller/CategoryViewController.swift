@@ -61,25 +61,61 @@ class CategoryViewController: SwipeTableViewController {
         
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         
-        let addCategory = UIAlertAction(title: "Add", style: .default) { (action) in
+        let addCategory = UIAlertAction(title: "Done", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
             newCategory.color = UIColor.randomFlat.hexValue()
             self.save(category: newCategory)
+            print("new category was saved")
             
         }
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
-            print("cancel")
+            print("cancel was called")
         }
         
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "Add new category"
-            textField = alertTextField
-        }
+        addCategory.isEnabled = false
         
         alert.addAction(cancel)
         alert.addAction(addCategory)
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.enablesReturnKeyAutomatically = true
+            alertTextField.returnKeyType = .done
+            alertTextField.placeholder = "Add new category"
+            textField = alertTextField
+            
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: alertTextField, queue: OperationQueue.main, using:
+                
+                {_ in
+                    // Being in this block means that something fired the UITextFieldTextDidChange notification.
+                    
+                    // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
+                    let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
+                    let textIsNotEmpty = textCount > 0
+                    
+                    // If the text contains non whitespace characters, enable the OK Button
+                    addCategory.isEnabled = textIsNotEmpty
+                    
+                })
+
+
+        }
+//
+//        NotificationCenter.default.addObserver(forName: .UITextFieldTextDidChange, object: textField, queue: OperationQueue.main, using:
+//            {_ in
+//                // Being in this block means that something fired the UITextFieldTextDidChange notification.
+//
+//                // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
+//                let textCount = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines).characters.count ?? 0
+//                let textIsNotEmpty = textCount > 0
+//
+//                // If the text contains non whitespace characters, enable the OK Button
+//                okAction.isEnabled = textIsNotEmpty
+//
+//        })
+        
+
         
         present(alert, animated: true, completion: nil)
         
@@ -125,7 +161,7 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     func loadCategories() {
-        categories = realm.objects(Category.self)
+        categories = realm.objects(Category.self).sorted(byKeyPath: "name", ascending: true)
         tableView.reloadData()
     }
     

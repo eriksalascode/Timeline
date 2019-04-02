@@ -115,7 +115,7 @@ class ItemViewController: SwipeTableViewController {
        
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
-        let addItem = UIAlertAction(title: "Add", style: .default) { (action) in
+        let addItem = UIAlertAction(title: "Done", style: .default) { (action) in
             
             if let currentCategory = self.selectedCategory {
                 do {
@@ -137,16 +137,31 @@ class ItemViewController: SwipeTableViewController {
             print("cancel")
         }
         
-        
-
-        alert.addTextField { (alertTextField) in
-            alertTextField.placeholder = "Create new item"
-            textField = alertTextField
-        }
+        addItem.isEnabled = false
         
         alert.addAction(cancel)
         alert.addAction(addItem)
-        
+
+        alert.addTextField { (alertTextField) in
+            alertTextField.enablesReturnKeyAutomatically = true
+            alertTextField.returnKeyType = .done
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+            
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: alertTextField, queue: OperationQueue.main, using:
+                
+                {_ in
+                    // Being in this block means that something fired the UITextFieldTextDidChange notification.
+                    
+                    // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
+                    let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
+                    let textIsNotEmpty = textCount > 0
+                    
+                    // If the text contains non whitespace characters, enable the OK Button
+                    addItem.isEnabled = textIsNotEmpty
+                    
+            })
+        }
         
         present(alert, animated: true, completion: nil)
     }
