@@ -52,6 +52,7 @@ class ItemViewController: SwipeTableViewController {
         navBar.barTintColor = navBarColor
         navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
         navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
         searchBar.barTintColor = navBarColor
     }
     
@@ -66,15 +67,21 @@ class ItemViewController: SwipeTableViewController {
         
         if let item = categoryItems?[indexPath.row] {
             cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:17)
-            cell.textLabel?.text = item.title
-            cell.imageView?.image = item.done ? image : nil
+            
+            if item.done {
+                 cell.textLabel?.text = "☑️ \(item.title)"
+            } else {
+                cell.textLabel?.text = item.title
+            }
+            
+//            cell.imageView?.image = item.done ? image : nil
             
             if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(categoryItems!.count)) {
                 cell.backgroundColor = color
                 cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
                 cell.tintColor = ContrastColorOf(color, returnFlat: true)
             }
-            cell.accessoryType = item.done ? .checkmark : .none
+            cell.accessoryType = .detailButton
         } else {
             cell.textLabel?.text = "No Items In This Category"
         }
