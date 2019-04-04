@@ -48,5 +48,9 @@ class SwipeTableViewController: UITableViewController, SwipeTableViewCellDelegat
         
     }
     
+//    func updateAlertWindow(for alert: UIAlertController, with title: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
+//       
+//    }
+    
 
 }

@@ -61,6 +61,11 @@ class CategoryViewController: SwipeTableViewController {
         
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel was called")
+        }
+        
         let addCategory = UIAlertAction(title: "Done", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
@@ -70,9 +75,7 @@ class CategoryViewController: SwipeTableViewController {
             
         }
         
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
-            print("cancel was called")
-        }
+
         
         addCategory.isEnabled = false
         
@@ -94,29 +97,16 @@ class CategoryViewController: SwipeTableViewController {
                     let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
                     let textIsNotEmpty = textCount > 0
                     
-                    // If the text contains non whitespace characters, enable the OK Button
+                    // If the text contains non whitespace characters, enable the addCategory button
                     addCategory.isEnabled = textIsNotEmpty
                     
                 })
 
 
         }
-//
-//        NotificationCenter.default.addObserver(forName: .UITextFieldTextDidChange, object: textField, queue: OperationQueue.main, using:
-//            {_ in
-//                // Being in this block means that something fired the UITextFieldTextDidChange notification.
-//
-//                // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
-//                let textCount = textField.text?.trimmingCharacters(in: .whitespacesAndNewlines).characters.count ?? 0
-//                let textIsNotEmpty = textCount > 0
-//
-//                // If the text contains non whitespace characters, enable the OK Button
-//                okAction.isEnabled = textIsNotEmpty
-//
-//        })
         
-
-        
+        let alertColor = "000000"
+        updateAlertWindow(for: alert, with: "Add New Category", alertColor, cancel, addCategory)
         present(alert, animated: true, completion: nil)
         
     }
@@ -146,6 +136,7 @@ class CategoryViewController: SwipeTableViewController {
             guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
             cell.backgroundColor = categoryColor
             cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat:true)
+            cell.tintColor = ContrastColorOf(categoryColor, returnFlat: true)
             
             if categories?[indexPath.row].items.count != 0 {
                 cell.detailTextLabel?.isHidden = false
@@ -175,6 +166,65 @@ class CategoryViewController: SwipeTableViewController {
                 print("error updating model, \(error)")
             }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Edit Category", message: "", preferredStyle: .alert)
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
+        let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
+            if let category = self.categories?[indexPath.row] {
+                do {
+                    try self.realm.write {
+                        category.name = textField.text!
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+            
+            tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            if let category = self.categories?[indexPath.row] {
+                alertTextField.enablesReturnKeyAutomatically = true
+                alertTextField.returnKeyType = .done
+                alertTextField.borderStyle = .none
+                alertTextField.text = category.name
+                textField = alertTextField
+            }
+        }
+        
+        alert.addAction(cancel)
+        alert.addAction(editItem)
+    
+        guard let categoryColor = categories?[indexPath.row].color else {fatalError()}
+        updateAlertWindow(for: alert, with: "Edit Category", categoryColor, cancel, editItem)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    func updateAlertWindow(for alert: UIAlertController, with title: String, _ color: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
+        
+        guard let alertColor = UIColor(hexString: color) else {fatalError()}
+        //selectedCategory?.color else{fatalError()}
+        let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
+        subview.layer.cornerRadius = 10.0
+        subview.backgroundColor = alertColor
+        
+        var myMutableString = NSMutableAttributedString()
+        myMutableString = NSMutableAttributedString(string: title as String, attributes: [NSAttributedString.Key.font:UIFont(name: "AvenirNext-Medium", size: 17.0)!])
+        myMutableString.addAttribute(NSAttributedString.Key.foregroundColor, value: ContrastColorOf(alertColor, returnFlat: true), range: NSRange(location: 0, length: title.count))
+        alert.setValue(myMutableString, forKey: "attributedTitle")
+        
+        action1.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
+        action2.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
     }
     
     // MARK: - Prepare For Segue

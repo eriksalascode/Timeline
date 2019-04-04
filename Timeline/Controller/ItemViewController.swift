@@ -15,7 +15,7 @@ class ItemViewController: SwipeTableViewController {
     @IBOutlet var searchBar: UISearchBar!
     var categoryItems: Results<Item>?
     let realm = try! Realm()
-    let image = UIImage(named: "checkmark")
+//    let image = UIImage(named: "checkmark")
 
     var selectedCategory: Category? {
         didSet {
@@ -74,14 +74,12 @@ class ItemViewController: SwipeTableViewController {
                 cell.textLabel?.text = item.title
             }
             
-//            cell.imageView?.image = item.done ? image : nil
-            
             if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(categoryItems!.count)) {
                 cell.backgroundColor = color
                 cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
                 cell.tintColor = ContrastColorOf(color, returnFlat: true)
             }
-            cell.accessoryType = .detailButton
+            
         } else {
             cell.textLabel?.text = "No Items In This Category"
         }
@@ -115,6 +113,10 @@ class ItemViewController: SwipeTableViewController {
        
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
         let addItem = UIAlertAction(title: "Done", style: .default) { (action) in
             
             if let currentCategory = self.selectedCategory {
@@ -131,10 +133,6 @@ class ItemViewController: SwipeTableViewController {
             }
             
             self.tableView.reloadData()
-        }
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
-            print("cancel")
         }
         
         addItem.isEnabled = false
@@ -157,18 +155,58 @@ class ItemViewController: SwipeTableViewController {
                     let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
                     let textIsNotEmpty = textCount > 0
                     
-                    // If the text contains non whitespace characters, enable the OK Button
+                    // If the text contains non whitespace characters, enable the addItem button
                     addItem.isEnabled = textIsNotEmpty
                     
             })
         }
         
+        updateAlertWindow(for: alert, with: "Add New Item", cancel, addItem)
         present(alert, animated: true, completion: nil)
     }
     
     //MARK: - Model manipulation methods
     
-
+    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Edit Item", message: "", preferredStyle: .alert)
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
+        let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
+            if let item = self.categoryItems?[indexPath.row] {
+                do {
+                    try self.realm.write {
+                        item.title = textField.text!
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+            
+            tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            if let item = self.categoryItems?[indexPath.row] {
+                alertTextField.enablesReturnKeyAutomatically = true
+                alertTextField.returnKeyType = .done
+                alertTextField.borderStyle = .none
+                alertTextField.text = item.title
+                textField = alertTextField
+            }
+        }
+        
+        alert.addAction(cancel)
+        alert.addAction(editItem)
+        
+        updateAlertWindow(for: alert, with: "Edit Item", cancel, editItem)
+        present(alert, animated: true, completion: nil)
+    }
+    
     func loadItems() {
         categoryItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
@@ -186,7 +224,24 @@ class ItemViewController: SwipeTableViewController {
         }
     }
     
-    @objc func back(sender: UIBarButtonItem) {    
+    func updateAlertWindow(for alert: UIAlertController, with title: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
+        
+        guard let color = selectedCategory?.color else {fatalError()}
+        guard let alertColor = UIColor(hexString: color) else {fatalError()}
+        let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
+        subview.layer.cornerRadius = 10.0
+        subview.backgroundColor = alertColor
+        
+        var myMutableString = NSMutableAttributedString()
+        myMutableString = NSMutableAttributedString(string: title as String, attributes: [NSAttributedString.Key.font:UIFont(name: "AvenirNext-Medium", size: 17.0)!])
+        myMutableString.addAttribute(NSAttributedString.Key.foregroundColor, value: ContrastColorOf(alertColor, returnFlat: true), range: NSRange(location: 0, length: title.count))
+        alert.setValue(myMutableString, forKey: "attributedTitle")
+        
+        action1.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
+        action2.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
+    }
+    
+    @objc func back(sender: UIBarButtonItem) {
         _ = navigationController?.popViewController(animated: true)
     }
 }
