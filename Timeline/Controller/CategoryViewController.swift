@@ -30,6 +30,8 @@ class CategoryViewController: SwipeTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
         navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(UIColor.black, returnFlat: true)]
+        
+        
 
     }
     
@@ -129,8 +131,8 @@ class CategoryViewController: SwipeTableViewController {
         
         
         if let category = categories?[indexPath.row] {
-            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:24)
-            cell.detailTextLabel?.font = UIFont(name:"AvenirNext-Regular", size:17)
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:16)
+            cell.detailTextLabel?.font = UIFont(name:"AvenirNext-Medium", size:14)
             cell.textLabel?.text = category.name
             
             guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
@@ -238,4 +240,6 @@ class CategoryViewController: SwipeTableViewController {
     }
 
 }
+
+
 

@@ -15,8 +15,8 @@ class ItemViewController: SwipeTableViewController {
     @IBOutlet var searchBar: UISearchBar!
     var categoryItems: Results<Item>?
     let realm = try! Realm()
-//    let image = UIImage(named: "checkmark")
-
+    //    let image = UIImage(named: "checkmark")
+    
     var selectedCategory: Category? {
         didSet {
             loadItems()
@@ -29,18 +29,24 @@ class ItemViewController: SwipeTableViewController {
         super.viewDidLoad()
         tableView.separatorStyle = .none
         
-        self.navigationItem.hidesBackButton = true
-        let newBackButton = UIBarButtonItem(title: "Timeline", style: UIBarButtonItem.Style.plain, target: self, action: #selector(ItemViewController.back(sender:)))
-        self.navigationItem.leftBarButtonItem = newBackButton
+        let backButton = UIBarButtonItem(image: UIImage(imageLiteralResourceName: "back"), style: .done, target: self, action: #selector(ItemViewController.back(sender:)))
+        self.navigationItem.leftBarButtonItem = backButton
+        
+//        let edit = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(addItemButton(_:)))
+        let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButton(_:)))
+        navigationItem.rightBarButtonItems = [add, editButtonItem]
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //        title = selectedCategory?.name
         title = selectedCategory?.name
         guard let color = selectedCategory?.color else{fatalError()}
         updateNavBar(withHexCode: color)
-
-      
-        }
+        
+        
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         updateNavBar(withHexCode: "000000")
@@ -66,10 +72,10 @@ class ItemViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = categoryItems?[indexPath.row] {
-            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:17)
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:14)
             
             if item.done {
-                 cell.textLabel?.text = "☑️ \(item.title)"
+                cell.textLabel?.text = "☑️ \(item.title)"
             } else {
                 cell.textLabel?.text = item.title
             }
@@ -105,12 +111,16 @@ class ItemViewController: SwipeTableViewController {
         tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true )
     }
-
+    
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        moveItems(from: sourceIndexPath, to: destinationIndexPath)
+    }
+    
     //MARK: - Add new items function
     
-    @IBAction func addItemButton(_ sender: UIBarButtonItem) {
+    @objc func addItemButton(_ sender: UIBarButtonItem) {
         var textField = UITextField()
-       
+        
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
@@ -118,28 +128,71 @@ class ItemViewController: SwipeTableViewController {
         }
         
         let addItem = UIAlertAction(title: "Done", style: .default) { (action) in
-            
             if let currentCategory = self.selectedCategory {
                 do {
                     try self.realm.write {
+                        
+//                        if let lastItem { currentCategory.items.last?.order else {fatalError("This is the error")}}
                         let newItem = Item()
                         newItem.title = textField.text!
                         newItem.dateCreated = Date()
+//                        newItem.order = lastItem
+                        
+                        print("got to this line")
+
+                        var minNumber = 0
+                        
+                        for (index, _) in currentCategory.items.enumerated() {
+                            
+//                            var minNumber = item.order
+                            
+
+//                            print(index, item)
+//                            while currentCategory.items.count < (currentCategory.items.count - 1) {
+                            
+                            
+                            // if minNumber > currentCategory.items[index].order (ORIGINAL)
+                            
+                                if minNumber < currentCategory.items[index].order {
+                                    print("min number is \(minNumber)")
+
+                                    minNumber = currentCategory.items[index].order
+                                    print("min number is \(minNumber)")
+
+                                }
+//                            }
+                            
+//
+//                            repeat {
+//                                if minNumber > currentCategory.items[index + 1].order {
+//                                    minNumber = currentCategory.items[index + 1].order
+//                                }
+//                            } while index < currentCategory.items.count
+                            print("min number is \(minNumber)")
+
+                            //minNumber -= 1 (ORIGINAL)
+                            minNumber += 1
+                            print("min number is \(minNumber)")
+                            newItem.order = minNumber
+//                            if index == 0 {
+//                                newItem.done = item.done
+//                            }
+            
+                        }
                         currentCategory.items.append(newItem)
+                        
+                        
                     }
                 } catch {
                     print(error)
                 }
             }
-            
             self.tableView.reloadData()
         }
         
         addItem.isEnabled = false
-        
         alert.addAction(cancel)
         alert.addAction(addItem)
-
         alert.addTextField { (alertTextField) in
             alertTextField.enablesReturnKeyAutomatically = true
             alertTextField.returnKeyType = .done
@@ -147,17 +200,10 @@ class ItemViewController: SwipeTableViewController {
             textField = alertTextField
             
             NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: alertTextField, queue: OperationQueue.main, using:
-                
                 {_ in
-                    // Being in this block means that something fired the UITextFieldTextDidChange notification.
-                    
-                    // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
                     let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
                     let textIsNotEmpty = textCount > 0
-                    
-                    // If the text contains non whitespace characters, enable the addItem button
                     addItem.isEnabled = textIsNotEmpty
-                    
             })
         }
         
@@ -166,6 +212,13 @@ class ItemViewController: SwipeTableViewController {
     }
     
     //MARK: - Model manipulation methods
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: true)
+        tableView.setEditing(tableView.isEditing, animated: true)
+    }
+    
+    
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         var textField = UITextField()
@@ -208,8 +261,96 @@ class ItemViewController: SwipeTableViewController {
     }
     
     func loadItems() {
-        categoryItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        categoryItems = selectedCategory?.items.sorted(byKeyPath: "order")
+        
+//        objects = realm.objects(Data.self).sorted("order")
+        
+//        categoryItems = realm.objects(selectedCategory?.items.self).sorted(byKeyPath: "order")
+//        lists = uiRealm.objects(TaskList)
+//        self.taskListsTableView.setEditing(false, animated: true)
+//        self.taskListsTableView.reloadData()
         tableView.reloadData()
+    }
+    
+    func moveItems(from sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+//        if let sourceItem = categoryItems?[sourceIndexPath.row],
+//            let destinationItem = categoryItems?[destinationIndexPath.row] {
+    
+//            do {
+//                try realm.write {
+//
+//                    guard let item = selectedCategory?.items[sourceIndexPath.row] else {fatalError()}
+//                    //item.currentIndex = destinationIndexPath.row
+//
+//                    selectedCategory?.items.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
+//
+//
+//                }
+//            } catch {
+//                print("Error deleting item, \(error)")
+//            }
+//
+//        print("moving items")
+////        }
+//
+//        tableView.reloadData()
+        
+        do {
+            try realm.write {
+                let sourceObject = categoryItems?[sourceIndexPath.row]
+                let destinationObject = categoryItems?[destinationIndexPath.row]
+                
+                guard let destinationObjectOrder = destinationObject?.order else {fatalError()}
+                
+                if sourceIndexPath.row < destinationIndexPath.row {
+                    for index in sourceIndexPath.row...destinationIndexPath.row {
+                        guard let item = categoryItems?[index] else {fatalError()}
+                        item.order -= 1
+                    }
+                } else {
+                    for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
+                        guard let item = categoryItems?[index] else {fatalError()}
+                        item.order += 1
+                    }
+                }
+                
+                sourceObject?.order = destinationObjectOrder
+                
+            }
+            
+            tableView.reloadData()
+
+        } catch {
+            print("Error")
+        }
+
+        
+        
+//        try! realm.write {
+//            let sourceObject = objects[sourceIndexPath.row]
+//            let destinationObject = objects[destinationIndexPath.row]
+//
+//            let destinationObjectOrder = destinationObject.order
+//
+//            if sourceIndexPath.row < destinationIndexPath.row {
+//                // 上から下に移動した場合、間の項目を上にシフト
+//                for index in sourceIndexPath.row...destinationIndexPath.row {
+//                    let object = objects[index]
+//                    object.order -= 1
+//                }
+//            } else {
+//                // 下から上に移動した場合、間の項目を下にシフト
+//                for index in (destinationIndexPath.row..<sourceIndexPath.row).reverse() {
+//                    let object = objects[index]
+//                    object.order += 1
+//                }
+//            }
+//
+//            　　　　　　　　　　　　　　　　// 移動したセルの並びを移動先に更新
+//            sourceObject.order = destinationObjectOrder
+//        }
+//
+        
     }
     
     override func updateModel(at indexPath: IndexPath) {
@@ -255,13 +396,13 @@ extension ItemViewController: UISearchBarDelegate {
         categoryItems = categoryItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
         
         tableView.reloadData()
-
+        
     }
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text?.count == 0 {
             loadItems()
-
+            
             DispatchQueue.main.async {
                 searchBar.resignFirstResponder()
             }
