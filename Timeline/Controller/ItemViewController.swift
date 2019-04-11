@@ -36,6 +36,8 @@ class ItemViewController: SwipeTableViewController {
         let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButton(_:)))
         navigationItem.rightBarButtonItems = [add, editButtonItem]
         
+
+        editButtonItem.title = "Move"
         
     }
     
@@ -44,6 +46,7 @@ class ItemViewController: SwipeTableViewController {
         title = selectedCategory?.name
         guard let color = selectedCategory?.color else{fatalError()}
         updateNavBar(withHexCode: color)
+        
         
         
     }
@@ -72,10 +75,10 @@ class ItemViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let item = categoryItems?[indexPath.row] {
-            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:14)
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:16)
             
             if item.done {
-                cell.textLabel?.text = "☑️ \(item.title)"
+                cell.textLabel?.text = "✔︎ \(item.title)"
             } else {
                 cell.textLabel?.text = item.title
             }
@@ -140,7 +143,10 @@ class ItemViewController: SwipeTableViewController {
                         
                         print("got to this line")
 
-                        var minNumber = 0
+                        var maxNumber = 0
+                        
+//                        if currentCategory.items != nil {
+                        
                         
                         for (index, _) in currentCategory.items.enumerated() {
                             
@@ -153,11 +159,11 @@ class ItemViewController: SwipeTableViewController {
                             
                             // if minNumber > currentCategory.items[index].order (ORIGINAL)
                             
-                                if minNumber < currentCategory.items[index].order {
-                                    print("min number is \(minNumber)")
+                                if maxNumber < currentCategory.items[index].order {
+                                    print("max number is \(maxNumber)")
 
-                                    minNumber = currentCategory.items[index].order
-                                    print("min number is \(minNumber)")
+                                    maxNumber = currentCategory.items[index].order
+                                    print("max number is \(maxNumber)")
 
                                 }
 //                            }
@@ -168,17 +174,20 @@ class ItemViewController: SwipeTableViewController {
 //                                    minNumber = currentCategory.items[index + 1].order
 //                                }
 //                            } while index < currentCategory.items.count
-                            print("min number is \(minNumber)")
+                            print("max number is \(maxNumber)")
 
                             //minNumber -= 1 (ORIGINAL)
-                            minNumber += 1
-                            print("min number is \(minNumber)")
-                            newItem.order = minNumber
+                            maxNumber += 1
+                            print("max number is \(maxNumber)")
+                            newItem.order = maxNumber
 //                            if index == 0 {
 //                                newItem.done = item.done
 //                            }
             
                         }
+                            
+                        
+                        
                         currentCategory.items.append(newItem)
                         
                         
@@ -215,6 +224,13 @@ class ItemViewController: SwipeTableViewController {
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
+        if(self.isEditing)
+        {
+            self.editButtonItem.title = "Done"
+        }else
+        {
+            self.editButtonItem.title = "Move"
+        }
         tableView.setEditing(tableView.isEditing, animated: true)
     }
     

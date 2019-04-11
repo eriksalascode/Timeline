@@ -19,17 +19,29 @@ class CategoryViewController: SwipeTableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //load categories, set separatorStyle to .none, and reload table view
         loadCategories()
         tableView.separatorStyle = .none
-        tableView.reloadData()
+        tableView.reloadData() // why am i reloading??
+        
+        //create an array of rightBarButtonItems that will hold an edit and add button to the right of top nav bar
+        let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryButton(_:)))
+        navigationItem.rightBarButtonItems = [add, editButtonItem]
+        
+        editButtonItem.title = "Move"
         
     
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        tableView.reloadData()
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(UIColor.black, returnFlat: true)]
+        tableView.reloadData() // why am i reloading??
+
+        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation bar has not finished updating")}
+        guard let navBarColor = UIColor(hexString: "000000") else{fatalError()}
+        navBar.barTintColor = navBarColor
+        navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+        navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
         
         
 
@@ -57,6 +69,10 @@ class CategoryViewController: SwipeTableViewController {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     
+    override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        moveCategories(from: sourceIndexPath, to: destinationIndexPath)
+    }
+    
     // MARK: - Add New Categories
     @IBAction func addCategoryButton(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -69,9 +85,53 @@ class CategoryViewController: SwipeTableViewController {
         }
         
         let addCategory = UIAlertAction(title: "Done", style: .default) { (action) in
+            
             let newCategory = Category()
             newCategory.name = textField.text!
             newCategory.color = UIColor.randomFlat.hexValue()
+            var maxNumber = 0
+            
+//            for (index, _) in currentCategory.items.enumerated() {
+            let categories = self.realm.objects(Category.self)
+            for (index, _) in categories.enumerated() {
+            
+                //                            var minNumber = item.order
+                
+                
+                //                            print(index, item)
+                //                            while currentCategory.items.count < (currentCategory.items.count - 1) {
+                
+                
+                // if minNumber > currentCategory.items[index].order (ORIGINAL)
+                
+                if maxNumber < categories[index].order {
+                    print("max number is \(maxNumber)")
+                    
+                    maxNumber = categories[index].order
+                    print("max number is \(maxNumber)")
+                    
+                }
+                //                            }
+                
+                //
+                //                            repeat {
+                //                                if minNumber > currentCategory.items[index + 1].order {
+                //                                    minNumber = currentCategory.items[index + 1].order
+                //                                }
+                //                            } while index < currentCategory.items.count
+                print("max number is \(maxNumber)")
+                
+                //minNumber -= 1 (ORIGINAL)
+                maxNumber += 1
+                print("max number is \(maxNumber)")
+                newCategory.order = maxNumber
+                //                            if index == 0 {
+                //                                newItem.done = item.done
+                //                            }
+                
+            }
+            
+            
             self.save(category: newCategory)
             print("new category was saved")
             
@@ -113,7 +173,60 @@ class CategoryViewController: SwipeTableViewController {
         
     }
     
+    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Edit Category", message: "", preferredStyle: .alert)
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("cancel")
+        }
+        
+        let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
+            if let category = self.categories?[indexPath.row] {
+                do {
+                    try self.realm.write {
+                        category.name = textField.text!
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+            
+            tableView.reloadData()
+        }
+        
+        alert.addTextField { (alertTextField) in
+            if let category = self.categories?[indexPath.row] {
+                alertTextField.enablesReturnKeyAutomatically = true
+                alertTextField.returnKeyType = .done
+                alertTextField.borderStyle = .none
+                alertTextField.text = category.name
+                textField = alertTextField
+            }
+        }
+        
+        alert.addAction(cancel)
+        alert.addAction(editItem)
+        
+        guard let categoryColor = categories?[indexPath.row].color else {fatalError()}
+        updateAlertWindow(for: alert, with: "Edit Category", categoryColor, cancel, editItem)
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Data Manipulation Methods
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: true)
+        if(self.isEditing)
+        {
+            self.editButtonItem.title = "Done"
+        }else
+        {
+            self.editButtonItem.title = "Move"
+        }
+        tableView.setEditing(tableView.isEditing, animated: true)
+    }
     
     func save(category: Category) {
         do {
@@ -154,7 +267,8 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     func loadCategories() {
-        categories = realm.objects(Category.self).sorted(byKeyPath: "name", ascending: true)
+        //categoryItems = selectedCategory?.items.sorted(byKeyPath: "order")
+        categories = realm.objects(Category.self).sorted(byKeyPath: "order")
         tableView.reloadData()
     }
     
@@ -170,47 +284,36 @@ class CategoryViewController: SwipeTableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        var textField = UITextField()
-        
-        let alert = UIAlertController(title: "Edit Category", message: "", preferredStyle: .alert)
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
-            print("cancel")
-        }
-        
-        let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
-            if let category = self.categories?[indexPath.row] {
-                do {
-                    try self.realm.write {
-                        category.name = textField.text!
+    func moveCategories(from sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        do {
+            try realm.write {
+                let sourceObject = categories?[sourceIndexPath.row]
+                let destinationObject = categories?[destinationIndexPath.row]
+                
+                guard let destinationObjectOrder = destinationObject?.order else {fatalError()}
+                
+                if sourceIndexPath.row < destinationIndexPath.row {
+                    for index in sourceIndexPath.row...destinationIndexPath.row {
+                        guard let item = categories?[index] else {fatalError()}
+                        item.order -= 1
                     }
-                } catch {
-                    print(error)
+                } else {
+                    for index in (destinationIndexPath.row..<sourceIndexPath.row).reversed() {
+                        guard let item = categories?[index] else {fatalError()}
+                        item.order += 1
+                    }
                 }
+                
+                sourceObject?.order = destinationObjectOrder
+                
             }
             
             tableView.reloadData()
+            
+        } catch {
+            print("Error")
         }
-        
-        alert.addTextField { (alertTextField) in
-            if let category = self.categories?[indexPath.row] {
-                alertTextField.enablesReturnKeyAutomatically = true
-                alertTextField.returnKeyType = .done
-                alertTextField.borderStyle = .none
-                alertTextField.text = category.name
-                textField = alertTextField
-            }
-        }
-        
-        alert.addAction(cancel)
-        alert.addAction(editItem)
-    
-        guard let categoryColor = categories?[indexPath.row].color else {fatalError()}
-        updateAlertWindow(for: alert, with: "Edit Category", categoryColor, cancel, editItem)
-        present(alert, animated: true, completion: nil)
     }
-    
     
     func updateAlertWindow(for alert: UIAlertController, with title: String, _ color: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
         

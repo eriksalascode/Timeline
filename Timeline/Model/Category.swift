@@ -12,6 +12,7 @@ import RealmSwift
 class Category: Object {
     @objc dynamic var name: String = ""
     @objc dynamic var color: String = ""
+    @objc dynamic var order : Int = 0
 
     let items = List<Item>()
 }
