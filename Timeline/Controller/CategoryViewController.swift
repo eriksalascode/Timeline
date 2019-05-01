@@ -15,6 +15,7 @@ class CategoryViewController: SwipeTableViewController {
     let realm = try! Realm()
     //create an array of Category objects
     var categories: Results<Category>?
+    var add = UIBarButtonItem()
     
     
     override func viewDidLoad() {
@@ -22,10 +23,10 @@ class CategoryViewController: SwipeTableViewController {
         //load categories, set separatorStyle to .none, and reload table view
         loadCategories()
         tableView.separatorStyle = .none
-        tableView.reloadData() // why am i reloading??
+        tableView.reloadData()
         
         //create an array of rightBarButtonItems that will hold an edit and add button to the right of top nav bar
-        let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryButton(_:)))
+        add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryButton(_:)))
         navigationItem.rightBarButtonItems = [add, editButtonItem]
         
         editButtonItem.title = "Move"
@@ -34,8 +35,10 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        tableView.reloadData() // why am i reloading??
+        //reload data to show updated list count
+        tableView.reloadData()
 
+        //setup initial navigation bar and navigation bar item colors
         guard let navBar = navigationController?.navigationBar else {fatalError("Navigation bar has not finished updating")}
         guard let navBarColor = UIColor(hexString: "000000") else{fatalError()}
         navBar.barTintColor = navBarColor
@@ -54,7 +57,6 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
         return categories?.count ?? 1
     }
     
@@ -221,9 +223,11 @@ class CategoryViewController: SwipeTableViewController {
         if(self.isEditing)
         {
             self.editButtonItem.title = "Done"
+            add.isEnabled = false
         }else
         {
             self.editButtonItem.title = "Move"
+            add.isEnabled = true
         }
         tableView.setEditing(tableView.isEditing, animated: true)
     }

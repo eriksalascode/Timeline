@@ -16,6 +16,7 @@ class ItemViewController: SwipeTableViewController {
     var categoryItems: Results<Item>?
     let realm = try! Realm()
     //    let image = UIImage(named: "checkmark")
+    var add = UIBarButtonItem()
     
     var selectedCategory: Category? {
         didSet {
@@ -30,10 +31,11 @@ class ItemViewController: SwipeTableViewController {
         tableView.separatorStyle = .none
         
         let backButton = UIBarButtonItem(image: UIImage(imageLiteralResourceName: "back"), style: .done, target: self, action: #selector(ItemViewController.back(sender:)))
+        add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButton(_:)))
         self.navigationItem.leftBarButtonItem = backButton
         
 //        let edit = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(addItemButton(_:)))
-        let add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButton(_:)))
+
         navigationItem.rightBarButtonItems = [add, editButtonItem]
         
 
@@ -227,9 +229,12 @@ class ItemViewController: SwipeTableViewController {
         if(self.isEditing)
         {
             self.editButtonItem.title = "Done"
+            self.add.isEnabled = false
+            
         }else
         {
             self.editButtonItem.title = "Move"
+            self.add.isEnabled = true
         }
         tableView.setEditing(tableView.isEditing, animated: true)
     }
