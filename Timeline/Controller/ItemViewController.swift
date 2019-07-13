@@ -11,13 +11,10 @@ import RealmSwift
 import ChameleonFramework
 
 class ItemViewController: SwipeTableViewController {
-    //create an array of Item() objects
-    @IBOutlet var searchBar: UISearchBar!
+    @IBOutlet var searchBar: UISearchBar! //create an array of Item() objects
     var categoryItems: Results<Item>?
     let realm = try! Realm()
-    //    let image = UIImage(named: "checkmark")
     var add = UIBarButtonItem()
-    
     var selectedCategory: Category? {
         didSet {
             loadItems()
@@ -33,24 +30,14 @@ class ItemViewController: SwipeTableViewController {
         let backButton = UIBarButtonItem(image: UIImage(imageLiteralResourceName: "back"), style: .done, target: self, action: #selector(ItemViewController.back(sender:)))
         add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addItemButton(_:)))
         self.navigationItem.leftBarButtonItem = backButton
-        
-//        let edit = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(addItemButton(_:)))
-
         navigationItem.rightBarButtonItems = [add, editButtonItem]
-        
-
-        editButtonItem.title = "Move"
-        
+        editButtonItem.title = "Rearrange"
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        //        title = selectedCategory?.name
         title = selectedCategory?.name
         guard let color = selectedCategory?.color else{fatalError()}
         updateNavBar(withHexCode: color)
-        
-        
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,7 +67,7 @@ class ItemViewController: SwipeTableViewController {
             cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:16)
             
             if item.done {
-                cell.textLabel?.text = "✔︎ \(item.title)"
+                cell.textLabel?.text = "  ✔︎    \(item.title)"
             } else {
                 cell.textLabel?.text = item.title
             }
@@ -90,7 +77,6 @@ class ItemViewController: SwipeTableViewController {
                 cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
                 cell.tintColor = ContrastColorOf(color, returnFlat: true)
             }
-            
         } else {
             cell.textLabel?.text = "No Items In This Category"
         }
@@ -101,8 +87,6 @@ class ItemViewController: SwipeTableViewController {
     // MARK: - Tableview delegate methods
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        
         if let item = categoryItems?[indexPath.row] {
             do {
                 try realm.write {
@@ -125,79 +109,35 @@ class ItemViewController: SwipeTableViewController {
     
     @objc func addItemButton(_ sender: UIBarButtonItem) {
         var textField = UITextField()
-        
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
-        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
             print("cancel")
         }
-        
         let addItem = UIAlertAction(title: "Done", style: .default) { (action) in
             if let currentCategory = self.selectedCategory {
                 do {
                     try self.realm.write {
-                        
-//                        if let lastItem { currentCategory.items.last?.order else {fatalError("This is the error")}}
                         let newItem = Item()
                         newItem.title = textField.text!
                         newItem.dateCreated = Date()
-//                        newItem.order = lastItem
                         
-                        print("got to this line")
-
                         var maxNumber = 0
-                        
-//                        if currentCategory.items != nil {
-                        
-                        
                         for (index, _) in currentCategory.items.enumerated() {
-                            
-//                            var minNumber = item.order
-                            
+                            if maxNumber < currentCategory.items[index].order {
+                                maxNumber = currentCategory.items[index].order
+                            }
 
-//                            print(index, item)
-//                            while currentCategory.items.count < (currentCategory.items.count - 1) {
-                            
-                            
-                            // if minNumber > currentCategory.items[index].order (ORIGINAL)
-                            
-                                if maxNumber < currentCategory.items[index].order {
-                                    print("max number is \(maxNumber)")
-
-                                    maxNumber = currentCategory.items[index].order
-                                    print("max number is \(maxNumber)")
-
-                                }
-//                            }
-                            
-//
-//                            repeat {
-//                                if minNumber > currentCategory.items[index + 1].order {
-//                                    minNumber = currentCategory.items[index + 1].order
-//                                }
-//                            } while index < currentCategory.items.count
-                            print("max number is \(maxNumber)")
-
-                            //minNumber -= 1 (ORIGINAL)
                             maxNumber += 1
-                            print("max number is \(maxNumber)")
                             newItem.order = maxNumber
-//                            if index == 0 {
-//                                newItem.done = item.done
-//                            }
-            
                         }
-                            
-                        
                         
                         currentCategory.items.append(newItem)
-                        
-                        
                     }
                 } catch {
                     print(error)
                 }
             }
+            
             self.tableView.reloadData()
         }
         
@@ -207,6 +147,7 @@ class ItemViewController: SwipeTableViewController {
         alert.addTextField { (alertTextField) in
             alertTextField.enablesReturnKeyAutomatically = true
             alertTextField.returnKeyType = .done
+            alertTextField.autocorrectionType = .default
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
             
@@ -226,30 +167,26 @@ class ItemViewController: SwipeTableViewController {
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
+        
         if(self.isEditing)
         {
             self.editButtonItem.title = "Done"
             self.add.isEnabled = false
             
-        }else
-        {
-            self.editButtonItem.title = "Move"
+        } else {
+            self.editButtonItem.title = "Rearrange"
             self.add.isEnabled = true
         }
+        
         tableView.setEditing(tableView.isEditing, animated: true)
     }
     
-    
-    
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         var textField = UITextField()
-        
         let alert = UIAlertController(title: "Edit Item", message: "", preferredStyle: .alert)
-        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
             print("cancel")
         }
-        
         let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
             if let item = self.categoryItems?[indexPath.row] {
                 do {
@@ -263,7 +200,6 @@ class ItemViewController: SwipeTableViewController {
             
             tableView.reloadData()
         }
-        
         alert.addTextField { (alertTextField) in
             if let item = self.categoryItems?[indexPath.row] {
                 alertTextField.enablesReturnKeyAutomatically = true
@@ -283,44 +219,14 @@ class ItemViewController: SwipeTableViewController {
     
     func loadItems() {
         categoryItems = selectedCategory?.items.sorted(byKeyPath: "order")
-        
-//        objects = realm.objects(Data.self).sorted("order")
-        
-//        categoryItems = realm.objects(selectedCategory?.items.self).sorted(byKeyPath: "order")
-//        lists = uiRealm.objects(TaskList)
-//        self.taskListsTableView.setEditing(false, animated: true)
-//        self.taskListsTableView.reloadData()
         tableView.reloadData()
     }
     
     func moveItems(from sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-//        if let sourceItem = categoryItems?[sourceIndexPath.row],
-//            let destinationItem = categoryItems?[destinationIndexPath.row] {
-    
-//            do {
-//                try realm.write {
-//
-//                    guard let item = selectedCategory?.items[sourceIndexPath.row] else {fatalError()}
-//                    //item.currentIndex = destinationIndexPath.row
-//
-//                    selectedCategory?.items.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
-//
-//
-//                }
-//            } catch {
-//                print("Error deleting item, \(error)")
-//            }
-//
-//        print("moving items")
-////        }
-//
-//        tableView.reloadData()
-        
         do {
             try realm.write {
                 let sourceObject = categoryItems?[sourceIndexPath.row]
                 let destinationObject = categoryItems?[destinationIndexPath.row]
-                
                 guard let destinationObjectOrder = destinationObject?.order else {fatalError()}
                 
                 if sourceIndexPath.row < destinationIndexPath.row {
@@ -336,42 +242,12 @@ class ItemViewController: SwipeTableViewController {
                 }
                 
                 sourceObject?.order = destinationObjectOrder
-                
             }
             
             tableView.reloadData()
-
         } catch {
             print("Error")
         }
-
-        
-        
-//        try! realm.write {
-//            let sourceObject = objects[sourceIndexPath.row]
-//            let destinationObject = objects[destinationIndexPath.row]
-//
-//            let destinationObjectOrder = destinationObject.order
-//
-//            if sourceIndexPath.row < destinationIndexPath.row {
-//                // 上から下に移動した場合、間の項目を上にシフト
-//                for index in sourceIndexPath.row...destinationIndexPath.row {
-//                    let object = objects[index]
-//                    object.order -= 1
-//                }
-//            } else {
-//                // 下から上に移動した場合、間の項目を下にシフト
-//                for index in (destinationIndexPath.row..<sourceIndexPath.row).reverse() {
-//                    let object = objects[index]
-//                    object.order += 1
-//                }
-//            }
-//
-//            　　　　　　　　　　　　　　　　// 移動したセルの並びを移動先に更新
-//            sourceObject.order = destinationObjectOrder
-//        }
-//
-        
     }
     
     override func updateModel(at indexPath: IndexPath) {
@@ -387,7 +263,6 @@ class ItemViewController: SwipeTableViewController {
     }
     
     func updateAlertWindow(for alert: UIAlertController, with title: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
-        
         guard let color = selectedCategory?.color else {fatalError()}
         guard let alertColor = UIColor(hexString: color) else {fatalError()}
         let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
@@ -410,14 +285,10 @@ class ItemViewController: SwipeTableViewController {
 
 //MARK: - Search bar methods
 
-
 extension ItemViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
         categoryItems = categoryItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
-        
         tableView.reloadData()
-        
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -430,4 +301,3 @@ extension ItemViewController: UISearchBarDelegate {
         }
     }
 }
-

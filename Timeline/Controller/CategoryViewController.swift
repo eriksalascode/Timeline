@@ -11,16 +11,12 @@ import RealmSwift
 import ChameleonFramework
 
 class CategoryViewController: SwipeTableViewController {
-    //create a new Realm
-    let realm = try! Realm()
-    //create an array of Category objects
-    var categories: Results<Category>?
+    let realm = try! Realm() //create a new Realm
+    var categories: Results<Category>? //create an array of Category objects
     var add = UIBarButtonItem()
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //load categories, set separatorStyle to .none, and reload table view
         loadCategories()
         tableView.separatorStyle = .none
         tableView.reloadData()
@@ -29,9 +25,7 @@ class CategoryViewController: SwipeTableViewController {
         add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryButton(_:)))
         navigationItem.rightBarButtonItems = [add, editButtonItem]
         
-        editButtonItem.title = "Move"
-        
-    
+        editButtonItem.title = "Rearrange"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,9 +39,6 @@ class CategoryViewController: SwipeTableViewController {
         navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
         navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
         navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
-        
-        
-
     }
     
     // MARK: - Table View Datasource Methods
@@ -64,126 +55,74 @@ class CategoryViewController: SwipeTableViewController {
         return categorySetup(indexPath: indexPath)
     }
     
-  
-    
     // MARK: - Table View Delegate Methods
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
     
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        //call function to move categories from one index to another
         moveCategories(from: sourceIndexPath, to: destinationIndexPath)
     }
     
     // MARK: - Add New Categories
+    
     @IBAction func addCategoryButton(_ sender: UIBarButtonItem) {
         var textField = UITextField()
-        
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
-        
-        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
             print("cancel was called")
         }
-        
         let addCategory = UIAlertAction(title: "Done", style: .default) { (action) in
-            
             let newCategory = Category()
             newCategory.name = textField.text!
             newCategory.color = UIColor.randomFlat.hexValue()
             var maxNumber = 0
             
-//            for (index, _) in currentCategory.items.enumerated() {
             let categories = self.realm.objects(Category.self)
             for (index, _) in categories.enumerated() {
-            
-                //                            var minNumber = item.order
-                
-                
-                //                            print(index, item)
-                //                            while currentCategory.items.count < (currentCategory.items.count - 1) {
-                
-                
-                // if minNumber > currentCategory.items[index].order (ORIGINAL)
-                
                 if maxNumber < categories[index].order {
-                    print("max number is \(maxNumber)")
-                    
                     maxNumber = categories[index].order
-                    print("max number is \(maxNumber)")
-                    
                 }
-                //                            }
                 
-                //
-                //                            repeat {
-                //                                if minNumber > currentCategory.items[index + 1].order {
-                //                                    minNumber = currentCategory.items[index + 1].order
-                //                                }
-                //                            } while index < currentCategory.items.count
-                print("max number is \(maxNumber)")
-                
-                //minNumber -= 1 (ORIGINAL)
                 maxNumber += 1
-                print("max number is \(maxNumber)")
                 newCategory.order = maxNumber
-                //                            if index == 0 {
-                //                                newItem.done = item.done
-                //                            }
-                
             }
-            
-            
+        
             self.save(category: newCategory)
             print("new category was saved")
-            
         }
         
-
-        
         addCategory.isEnabled = false
-        
         alert.addAction(cancel)
         alert.addAction(addCategory)
-        
         alert.addTextField { (alertTextField) in
             alertTextField.enablesReturnKeyAutomatically = true
             alertTextField.returnKeyType = .done
+            alertTextField.autocorrectionType = .default
             alertTextField.placeholder = "Add new category"
             textField = alertTextField
             
             NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: alertTextField, queue: OperationQueue.main, using:
-                
                 {_ in
-                    // Being in this block means that something fired the UITextFieldTextDidChange notification.
-                    
-                    // Access the textField object from alertController.addTextField(configurationHandler:) above and get the character count of its non whitespace characters
                     let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
                     let textIsNotEmpty = textCount > 0
-                    
-                    // If the text contains non whitespace characters, enable the addCategory button
                     addCategory.isEnabled = textIsNotEmpty
-                    
                 })
-
-
         }
         
         let alertColor = "000000"
         updateAlertWindow(for: alert, with: "Add New Category", alertColor, cancel, addCategory)
         present(alert, animated: true, completion: nil)
-        
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         var textField = UITextField()
-        
         let alert = UIAlertController(title: "Edit Category", message: "", preferredStyle: .alert)
-        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
             print("cancel")
         }
-        
         let editItem = UIAlertAction(title: "Done", style: .default) { (action) in
             if let category = self.categories?[indexPath.row] {
                 do {
@@ -220,13 +159,12 @@ class CategoryViewController: SwipeTableViewController {
     
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
-        if(self.isEditing)
+        if self.isEditing
         {
             self.editButtonItem.title = "Done"
             add.isEnabled = false
-        }else
-        {
-            self.editButtonItem.title = "Move"
+        } else {
+            self.editButtonItem.title = "Rearrange"
             add.isEnabled = true
         }
         tableView.setEditing(tableView.isEditing, animated: true)
@@ -245,7 +183,6 @@ class CategoryViewController: SwipeTableViewController {
     
     func categorySetup(indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        
         
         if let category = categories?[indexPath.row] {
             cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:16)
@@ -271,7 +208,6 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     func loadCategories() {
-        //categoryItems = selectedCategory?.items.sorted(byKeyPath: "order")
         categories = realm.objects(Category.self).sorted(byKeyPath: "order")
         tableView.reloadData()
     }
@@ -293,7 +229,6 @@ class CategoryViewController: SwipeTableViewController {
             try realm.write {
                 let sourceObject = categories?[sourceIndexPath.row]
                 let destinationObject = categories?[destinationIndexPath.row]
-                
                 guard let destinationObjectOrder = destinationObject?.order else {fatalError()}
                 
                 if sourceIndexPath.row < destinationIndexPath.row {
@@ -309,20 +244,16 @@ class CategoryViewController: SwipeTableViewController {
                 }
                 
                 sourceObject?.order = destinationObjectOrder
-                
             }
             
             tableView.reloadData()
-            
         } catch {
             print("Error")
         }
     }
     
     func updateAlertWindow(for alert: UIAlertController, with title: String, _ color: String, _ action1 : UIAlertAction, _ action2: UIAlertAction) {
-        
         guard let alertColor = UIColor(hexString: color) else {fatalError()}
-        //selectedCategory?.color else{fatalError()}
         let subview = (alert.view.subviews.first?.subviews.first?.subviews.first!)! as UIView
         subview.layer.cornerRadius = 10.0
         subview.backgroundColor = alertColor
@@ -340,12 +271,10 @@ class CategoryViewController: SwipeTableViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! ItemViewController
-        
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedCategory = categories?[indexPath.row]
         }
     }
-
 }
 
 

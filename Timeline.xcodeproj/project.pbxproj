@@ -16,7 +16,6 @@
 		F221AAE92246F08200507EBE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F221AAE82246F08200507EBE /* Assets.xcassets */; };
 		F221AAEC2246F08200507EBE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F221AAEA2246F08200507EBE /* LaunchScreen.storyboard */; };
 		F221AAFA22481C9800507EBE /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F221AAF922481C9800507EBE /* CategoryViewController.swift */; };
-		F28BD7D22250758B0099F0B8 /* TestTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28BD7D12250758B0099F0B8 /* TestTableViewController.swift */; };
 		F2C487E5224C02F60068D240 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2C487E4224C02F60068D240 /* SwipeTableViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -33,8 +32,7 @@
 		F221AAE82246F08200507EBE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F221AAEB2246F08200507EBE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F221AAED2246F08200507EBE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F221AAF922481C9800507EBE /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
-		F28BD7D12250758B0099F0B8 /* TestTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTableViewController.swift; sourceTree = "<group>"; };
+		F221AAF922481C9800507EBE /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CategoryViewController.swift; path = /Users/eriksalas/Documents/Apps/iOSapps/Timeline/Timeline/Controller/CategoryViewController.swift; sourceTree = "<absolute>"; };
 		F2C487E4224C02F60068D240 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -121,7 +119,6 @@
 				F2C487E4224C02F60068D240 /* SwipeTableViewController.swift */,
 				F221AAF922481C9800507EBE /* CategoryViewController.swift */,
 				F221AAE02246F08100507EBE /* ItemViewController.swift */,
-				F28BD7D12250758B0099F0B8 /* TestTableViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -267,7 +264,6 @@
 				F221AAE12246F08100507EBE /* ItemViewController.swift in Sources */,
 				F221AADF2246F08100507EBE /* AppDelegate.swift in Sources */,
 				F2C487E5224C02F60068D240 /* SwipeTableViewController.swift in Sources */,
-				F28BD7D22250758B0099F0B8 /* TestTableViewController.swift in Sources */,
 				F21EF4E22249AEAA00DF4CDA /* Category.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -416,7 +412,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B4589LXL7X;
+				DEVELOPMENT_TEAM = 7XHFQ957JQ;
 				INFOPLIST_FILE = Timeline/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -435,7 +431,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = B4589LXL7X;
+				DEVELOPMENT_TEAM = 7XHFQ957JQ;
 				INFOPLIST_FILE = Timeline/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
