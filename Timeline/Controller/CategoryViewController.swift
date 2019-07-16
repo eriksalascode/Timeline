@@ -20,7 +20,7 @@ class CategoryViewController: SwipeTableViewController {
         loadCategories()
         tableView.separatorStyle = .none
         tableView.reloadData()
-        
+                
         //create an array of rightBarButtonItems that will hold an edit and add button to the right of top nav bar
         add = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCategoryButton(_:)))
         navigationItem.rightBarButtonItems = [add, editButtonItem]
@@ -29,7 +29,6 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        //reload data to show updated list count
         tableView.reloadData()
 
         //setup initial navigation bar and navigation bar item colors
@@ -91,6 +90,8 @@ class CategoryViewController: SwipeTableViewController {
             }
         
             self.save(category: newCategory)
+            self.scrollToBottom()
+
             print("new category was saved")
         }
         
@@ -141,6 +142,7 @@ class CategoryViewController: SwipeTableViewController {
             if let category = self.categories?[indexPath.row] {
                 alertTextField.enablesReturnKeyAutomatically = true
                 alertTextField.returnKeyType = .done
+                alertTextField.autocorrectionType = .default
                 alertTextField.borderStyle = .none
                 alertTextField.text = category.name
                 textField = alertTextField
@@ -265,6 +267,14 @@ class CategoryViewController: SwipeTableViewController {
         
         action1.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
         action2.setValue(ContrastColorOf(alertColor, returnFlat: true), forKey: "titleTextColor")
+    }
+    
+    // scroll to set focus to the lastest category added
+    func scrollToBottom(){
+        DispatchQueue.main.async {
+            let indexPath = IndexPath(row: ((self.categories?.count ?? 1) - 1), section: 0)
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
     }
     
     // MARK: - Prepare For Segue

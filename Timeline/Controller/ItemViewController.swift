@@ -132,6 +132,7 @@ class ItemViewController: SwipeTableViewController {
                         }
                         
                         currentCategory.items.append(newItem)
+                        self.scrollToBottom()
                     }
                 } catch {
                     print(error)
@@ -204,6 +205,7 @@ class ItemViewController: SwipeTableViewController {
             if let item = self.categoryItems?[indexPath.row] {
                 alertTextField.enablesReturnKeyAutomatically = true
                 alertTextField.returnKeyType = .done
+                alertTextField.autocorrectionType = .default
                 alertTextField.borderStyle = .none
                 alertTextField.text = item.title
                 textField = alertTextField
@@ -280,6 +282,14 @@ class ItemViewController: SwipeTableViewController {
     
     @objc func back(sender: UIBarButtonItem) {
         _ = navigationController?.popViewController(animated: true)
+    }
+    
+    // scrolling to set focus to the latest item added
+    func scrollToBottom(){
+        DispatchQueue.main.async {
+            let indexPath = IndexPath(row: ((self.categoryItems?.count ?? 1) - 1), section: 0)
+            self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+        }
     }
 }
 
