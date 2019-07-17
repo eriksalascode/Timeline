@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="551"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="jJa-Nn-3qy">
+                        <searchBar key="tableHeaderView" contentMode="redraw" misplaced="YES" id="jJa-Nn-3qy">
                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="yes"/>
@@ -73,7 +73,7 @@
             </objects>
             <point key="canvasLocation" x="1068" y="171.36431784107947"/>
         </scene>
-        <!--Schema-->
+        <!--Schema Lists-->
         <scene sceneID="gnW-xl-yC1">
             <objects>
                 <tableViewController id="7cP-fw-ajY" customClass="CategoryViewController" customModule="Timeline" customModuleProvider="target" sceneMemberID="viewController">
@@ -112,7 +112,7 @@
                             <outlet property="delegate" destination="7cP-fw-ajY" id="113-pU-Ics"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Schema" id="F5H-zp-i8Z">
+                    <navigationItem key="navigationItem" title="Schema Lists" id="F5H-zp-i8Z">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="aU5-D7-vGS">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
