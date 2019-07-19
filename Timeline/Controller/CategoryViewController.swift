@@ -149,6 +149,13 @@ class CategoryViewController: SwipeTableViewController {
                 alertTextField.text = category.name
                 textField = alertTextField
             }
+            
+            NotificationCenter.default.addObserver(forName: UITextField.textDidChangeNotification, object: alertTextField, queue: OperationQueue.main, using:
+                {_ in
+                    let textCount = alertTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines).count ?? 0
+                    let textIsNotEmpty = textCount > 0
+                    editItem.isEnabled = textIsNotEmpty
+            })
         }
         
         alert.addAction(cancel)
