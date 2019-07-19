@@ -149,6 +149,7 @@ class ItemViewController: SwipeTableViewController {
             alertTextField.enablesReturnKeyAutomatically = true
             alertTextField.returnKeyType = .done
             alertTextField.autocorrectionType = .default
+            alertTextField.autocapitalizationType = .sentences
             alertTextField.placeholder = "Create new item"
             textField = alertTextField
             
@@ -206,6 +207,7 @@ class ItemViewController: SwipeTableViewController {
                 alertTextField.enablesReturnKeyAutomatically = true
                 alertTextField.returnKeyType = .done
                 alertTextField.autocorrectionType = .default
+                alertTextField.autocapitalizationType = .sentences
                 alertTextField.borderStyle = .none
                 alertTextField.text = item.title
                 textField = alertTextField

@@ -102,6 +102,7 @@ class CategoryViewController: SwipeTableViewController {
             alertTextField.enablesReturnKeyAutomatically = true
             alertTextField.returnKeyType = .done
             alertTextField.autocorrectionType = .default
+            alertTextField.autocapitalizationType = .words
             alertTextField.placeholder = "Add new category"
             textField = alertTextField
             
@@ -143,6 +144,7 @@ class CategoryViewController: SwipeTableViewController {
                 alertTextField.enablesReturnKeyAutomatically = true
                 alertTextField.returnKeyType = .done
                 alertTextField.autocorrectionType = .default
+                alertTextField.autocapitalizationType = .words
                 alertTextField.borderStyle = .none
                 alertTextField.text = category.name
                 textField = alertTextField
@@ -187,8 +189,8 @@ class CategoryViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         if let category = categories?[indexPath.row] {
-            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:16)
-            cell.detailTextLabel?.font = UIFont(name:"AvenirNext-Medium", size:14)
+            cell.textLabel?.font = UIFont(name:"AvenirNext-Medium", size:17)
+            cell.detailTextLabel?.font = UIFont(name:"AvenirNext-Heavy", size:14)
             cell.textLabel?.text = category.name
             
             guard let categoryColor = UIColor(hexString: category.color) else {fatalError()}
@@ -197,9 +199,17 @@ class CategoryViewController: SwipeTableViewController {
             cell.tintColor = ContrastColorOf(categoryColor, returnFlat: true)
             
             if categories?[indexPath.row].items.count != 0 {
+                //                var totalCount = 0
+                var checked = 0
                 cell.detailTextLabel?.isHidden = false
                 guard let itemCount = categories?[indexPath.row].items.count else {fatalError()}
-                cell.detailTextLabel?.text = String(itemCount)
+                guard let items = categories?[indexPath.row].items else {fatalError()}
+                for item in items {
+                    if item.done == true {
+                        checked += 1
+                    }
+                }
+                cell.detailTextLabel?.text = String("\(checked) / \(itemCount)")
                 cell.detailTextLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
             } else {
                 cell.detailTextLabel?.isHidden = true
