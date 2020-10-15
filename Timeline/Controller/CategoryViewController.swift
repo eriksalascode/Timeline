@@ -76,7 +76,7 @@ class CategoryViewController: SwipeTableViewController {
         let addCategory = UIAlertAction(title: "Done", style: .default) { (action) in
             let newCategory = Category()
             newCategory.name = textField.text!
-            newCategory.color = UIColor.randomFlat.hexValue()
+            newCategory.color = UIColor.randomFlat().hexValue()
             var maxNumber = 0
             
             let categories = self.realm.objects(Category.self)
@@ -120,6 +120,8 @@ class CategoryViewController: SwipeTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        if self.isEditing { return }
+
         var textField = UITextField()
         let alert = UIAlertController(title: "Edit Category", message: "", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in

@@ -184,6 +184,8 @@ class ItemViewController: SwipeTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        if self.isEditing { return }
+        
         var textField = UITextField()
         let alert = UIAlertController(title: "Edit Item", message: "", preferredStyle: .alert)
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
